@@ -1,5 +1,9 @@
 # C++ String
 
+- [C++ String](#c-string)
+  - [Encoding](#encoding)
+  - [string](#string)
+
 ## Encoding
 
 example in Qt Creator
@@ -21,3 +25,28 @@ int main()
 }
 ```
 
+## string
+
+```cpp
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+int main()
+{
+    string s1="hello";
+    string s2("hello");
+    string s2=string("hello");
+    // .length()与.size()等价
+    cout<<s1<<' '<<s1.length()<<' '<<s1.size()<<' '<<s1.capacity()<<endl;
+    // hello 5 5 15
+    cout<<s2<<' '<<s2.length()<<' '<<s2.size()<<' '<<s2.capacity()<<endl;
+    // hello 5 5 15
+    cout<<(s1==s2)<<endl;
+}
+```
+
+const默认修饰离它近的，默认修饰左侧，左侧没有修饰右侧
+- `const char *`: 修饰char, char不允许修改
+- `char * const`: 修饰*, 指针不允许修改
