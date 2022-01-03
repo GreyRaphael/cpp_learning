@@ -1,9 +1,10 @@
-# C++ String
+# C++ Trick
 
-- [C++ String](#c-string)
+- [C++ Trick](#c-trick)
   - [Encoding](#encoding)
   - [string](#string)
   - [const](#const)
+  - [pointer](#pointer)
 
 ## Encoding
 
@@ -72,11 +73,9 @@ int main()
 
     int const * const p4=a1;
     const int * const p5=a1; //p5和p4等价
-
     p1=a2;
     // *p1=111; //not allowed
     cout<<*p1<<endl; //11
-    cout<<*(p1+1)<<endl; //22
 
     //p3=a2; //not allowed
     cout<<*p3<<endl; //1
@@ -84,9 +83,15 @@ int main()
     *(p3+1)=222;
     cout<<*(p3+1)<<endl;//222
 
+    cout<<*(p2+1)<<endl; //222, 虽然p2无法改变数组的值，但是通过其他指针，确实能够改变该数组中的值
+    // 所以p2只具有read-only功能
+    // 一般开发的时候，read-only功能分配给这种类型的指针；
+    // 程序的write分配给另外的指针
+
 
     //p4=a2; //not allowed
     // *p4=999; //not allowed
+
 }
 ```
 
@@ -114,3 +119,33 @@ int main()
 }
 ```
 
+## pointer
+
+```cpp
+#include <iostream>
+
+using namespace std;
+
+int main()
+{
+    int a1[]={1,2,3};
+    int a2[]={1,2,3};
+    int* p1=a1;
+    int* p2=a2;
+
+    // ++优先级高于*
+    //cout<<*(p1++)<<endl; //1
+    cout<<*p1++<<endl; //1
+    cout<<*p1<<endl; //2
+    *p1++=22;
+    cout<<a1[0]<<' '<<a1[1]<<' '<<a1[2]<<endl; //1 22 3
+    cout<<*p1<<endl; // 3
+
+    //cout<<*(++p2)<<endl; //2
+    cout<<*++p2<<endl; //2
+    cout<<*p2<<endl; //2
+    *++p2=33;
+    cout<<a2[0]<<' '<<a2[1]<<' '<<a2[2]<<endl; // 1 2 33
+    cout<<*p2<<endl; // 33
+}
+```
