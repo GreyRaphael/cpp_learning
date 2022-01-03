@@ -149,3 +149,17 @@ int main()
     cout<<*p2<<endl; // 33
 }
 ```
+
+```cpp
+#include <iostream>
+
+using namespace std;
+
+int main()
+{
+    int a=1,b=2,c,d;
+    c=a+++b; // 相当于a++     +b
+    // d=a++++b; //相当于a++    ++b // error
+    cout<<c<<endl; // 3
+}
+```
