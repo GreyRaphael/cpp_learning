@@ -158,8 +158,17 @@ using namespace std;
 int main()
 {
     int a=1,b=2,c,d;
+    // c=a++b // error
     c=a+++b; // 相当于a++     +b
     // d=a++++b; //相当于a++    ++b // error
     cout<<c<<endl; // 3
+
+    int arr[]={11,22,33};
+    int* p1=arr;
+    e=++*++p1;
+    f=*++p1 + 1;
+    cout<<e<<endl; // 23
+    cout<<f<<endl; // 34
+    cout<<arr[0]<<' '<<arr[1]<<' '<<arr[2]; // 11 23 33
 }
 ```
