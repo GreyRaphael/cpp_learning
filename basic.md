@@ -11,6 +11,8 @@
     - [shared_ptr](#shared_ptr)
     - [weak_ptr](#weak_ptr)
   - [reference](#reference)
+  - [sentence](#sentence)
+  - [if, switch](#if-switch)
 
 ## Encoding
 
@@ -531,5 +533,72 @@ int main()
     cout<<a<<' '<<b<<endl; // 10 20
 
     return 0;
+}
+```
+
+## sentence
+
+## if, switch
+
+```cpp
+#include <iostream>
+using namespace std;
+
+typedef enum __COLOR{
+    RED,
+    GREEN,
+    BLUE,
+    UNKNOW
+} color;
+
+
+int main()
+{
+    color c1=BLUE;
+    cout<<c1<<endl; // 2
+
+    if (c1==BLUE){
+        cout<<"color blue"<<endl;
+    }else if(c1==GREEN){
+        cout<<"color green"<<endl;
+    }else if (c1==RED){
+        cour<<"color red"<<endl;
+    }else{
+        cout<<"other color"<<endl;
+    }
+}
+```
+
+```cpp
+#include <iostream>
+using namespace std;
+
+typedef enum __COLOR{
+    RED,
+    GREEN,
+    BLUE,
+    UNKNOW
+} color;
+
+
+int main()
+{
+    color c1=BLUE;
+    cout<<c1<<endl; // 2
+
+    switch (c1) {
+        case RED:
+            cout<<"color red"<<endl;
+            break;
+        case GREEN:
+            cout<<"color green"<<endl;
+            break;
+        case BLUE:
+            cout<<"color blue"<<endl;
+            break;
+        default:
+            cout<<"color red"<<endl;
+            break;
+    }
 }
 ```
