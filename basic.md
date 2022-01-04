@@ -15,6 +15,8 @@
   - [if, switch](#if-switch)
   - [enumerate](#enumerate)
   - [struct,union](#structunion)
+  - [loop](#loop)
+  - [function](#function)
 
 ## Encoding
 
@@ -654,4 +656,10 @@ int main()
 结构体，联合体
 
 struct:没有各种private, protect, public的class
+
+## loop
+
+finish
+
+## function
 
