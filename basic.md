@@ -14,6 +14,7 @@
   - [sentence](#sentence)
   - [if, switch](#if-switch)
   - [enumerate](#enumerate)
+  - [struct,union](#structunion)
 
 ## Encoding
 
@@ -647,3 +648,10 @@ int main()
     cout<<c1<<endl; //1
 }
 ```
+
+## struct,union
+
+结构体，联合体
+
+struct:没有各种private, protect, public的class
+
