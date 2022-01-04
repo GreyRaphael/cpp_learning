@@ -13,6 +13,7 @@
   - [reference](#reference)
   - [sentence](#sentence)
   - [if, switch](#if-switch)
+  - [enumerate](#enumerate)
 
 ## Encoding
 
@@ -612,5 +613,37 @@ int main()
             cout<<"color red"<<endl;
             break;
     }
+}
+```
+
+## enumerate
+
+notes:
+- 枚举值不能作为左值
+- 非枚举值不能直接赋值给枚举变量
+- 枚举变量可以直接赋值给非枚举变量
+
+```cpp
+#include <iostream>
+using namespace std;
+
+typedef enum __COLOR{
+    RED,
+    GREEN,
+    BLUE,
+    UNKNOW
+} color;
+
+
+int main()
+{
+    // 声明
+    enum COLOR{RED,GREEN,BLUE};
+    // 定义
+    COLOR c1=BLUE;
+    // c1=1; // 不能直接赋值，需要强制类型转换
+    cout<<c1<<endl; // 2
+    c1=COLOR(1);
+    cout<<c1<<endl; //1
 }
 ```
