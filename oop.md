@@ -4,6 +4,7 @@
   - [oop introduction](#oop-introduction)
   - [file operation](#file-operation)
   - [header file](#header-file)
+  - [deep copy vs copy](#deep-copy-vs-copy)
 
 ## oop introduction
 
@@ -107,3 +108,14 @@ method1: 使用宏来防止同一个文件被include多次
 method2: `#pragma once`，使用编译器来防止同一个文件被include多次
 - 优点: 可以防止宏名重复，易排错
 - 缺点：可移植性不好
+
+## deep copy vs copy
+
+浅拷贝vs深拷贝
+- 浅拷贝：只拷贝指针地址，CPP默认**拷贝构造函数**和**赋值运算符重载**都是浅拷贝；节省空间，但容易引发多次释放
+- 深拷贝：重新分配堆内存，拷贝指针指向堆内存；浪费空间，但是不会导致多次释放
+
+兼顾二者优点的方案
+1. 引用计数
+2. C++新标准的移动语义(move)
+
