@@ -3,6 +3,7 @@
 - [C++ OOP](#c-oop)
   - [oop introduction](#oop-introduction)
   - [file operation](#file-operation)
+  - [header file](#header-file)
 
 ## oop introduction
 
@@ -85,3 +86,24 @@ int main()
     cout<<flag<<endl;
 }
 ```
+
+## header file
+
+为了避免同一个`.h`文件被include多次，采用两种方式
+
+method1: 使用宏来防止同一个文件被include多次
+- 优点：可移植性好
+- 缺点：无法防止宏名重复，难以排错
+
+> Once the header is included, it checks if a unique value (in this case `_SOMEFILE_H_`) is defined. Then if it's not defined, it defines it and continues to the rest of the page.When the code is included again, the first `ifndef` fails, resulting in a blank file.That prevents double declaration of any identifiers such as types, enums and static variables.
+
+```cpp
+#ifndef _SOMEFILE_H_
+#define _SOMEFILE_H_
+//...
+#endif
+```
+
+method2: `#pragma once`，使用编译器来防止同一个文件被include多次
+- 优点: 可以防止宏名重复，易排错
+- 缺点：可移植性不好
