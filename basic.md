@@ -540,6 +540,18 @@ int main()
 
 ## if, switch
 
+分支过多，switch效率更高
+
+使用场景
+1. switch只支持常量值相等的判断
+2. if可以判断区间
+3. switch能做的，if也能; 反过来则不行
+
+性能比较
+- 分支少，性能差别不大；分支多，switch性能强
+- if开始处几个分支效率高之后效率递减
+- switch所有的case效率都一样
+
 ```cpp
 #include <iostream>
 using namespace std;
