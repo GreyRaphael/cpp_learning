@@ -10,6 +10,7 @@
     - [unique_ptr](#unique_ptr)
     - [shared_ptr](#shared_ptr)
     - [weak_ptr](#weak_ptr)
+  - [reference](#reference)
 
 ## Encoding
 
@@ -341,7 +342,6 @@ weak_ptr设计成与shared_ptr共同工作，用一种观察者模式工作
 - 当被观察的shared_ptr失效后，相应的weak_ptr也相应失效
 
 ```cpp
-#include <string>
 #include <iostream>
 #include <memory>
 using namespace std;
@@ -412,6 +412,123 @@ int main()
     Test(); // 循环引用导致析构~A(),~B()没有调用，产生内存泄漏
     Test2();// ~AW(),~BW()被调用，不产生内存泄漏
 
+
+    return 0;
+}
+```
+
+## reference
+
+引用：特殊的指针，不允许修改的指针
+> 可以认为是指定变量的别名(小名), 使用时可以认为是变量本身
+
+使用指针的坑
+- 空指针：不指向任何东西
+- 野指针: 指向垃圾内存的指针
+  - 指针变量没有初始化
+  - 已经delete释放对象，指针没有置NULL
+  - 指针超越了变量的作用范围
+- 不知不觉改变了指针的值，却继续使用
+
+使用引用
+- 不存在空引用
+- 必须初始化
+- 一个引用永远指向它初始化的对象
+
+有了指针为什么要用引用
+> 为了支持函数的运算符重载, 使得重载看起来自然一些
+
+有了引用为什么要用指针
+> 为了兼容C语言；Java只有引用，可以看成是C++--
+
+函数传递参数
+- 对于内置的基础类型(int, double, float)，函数中参数传递pass by value更加高效
+- 对于自定义的对象，函数中参数传递pass by reference to const更加高效
+
+```cpp
+// nullptr
+#include <iostream>
+#include <memory>
+using namespace std;
+
+
+int main()
+{
+    int* a=NULL; // c style
+    cout<<a<<endl; // 0000000000000000
+    // cout<<*a<<endl; // error
+
+    int *b=nullptr; // c++ style
+    cout<<b<<endl; // 0000000000000000
+
+    return 0;
+}
+```
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main()
+{
+    int x1=1,x2=3;
+    int& rx=x1;
+    rx=2;
+    cout<<x1<<endl; // 2
+    cout<<rx<<endl; // 2
+
+    rx=x2;
+    cout<<x1<<endl; // 3
+    cout<<rx<<endl; // 3
+
+    return 0;
+}
+```
+
+```cpp
+// 指针 vs 引用
+#include <iostream>
+#include <assert.h>
+using namespace std;
+
+void swap1(int x, int y){
+    // fail swap
+    int temp;
+    temp=x;
+    x=y;
+    y=temp;
+}
+
+void swap2(int& x, int& y){
+    // success swap
+    int temp;
+    temp=x;
+    x=y;
+    y=temp;
+}
+
+void swap3(int* px, int* py){
+    int temp;
+    temp=*px;
+    *px=*py;
+    *py=temp;
+}
+
+
+int main()
+{
+    int a=10,b=20;
+
+    // swap1(a,b); // swap fail
+    // cout<<a<<' '<<b<<endl; // 10 20
+    // assert(a==20 && b==10);
+
+    swap2(a,b);
+    assert(a==20 && b==10);
+    cout<<a<<' '<<b<<endl; // 20 10
+
+    swap3(&a,&b);
+    cout<<a<<' '<<b<<endl; // 10 20
 
     return 0;
 }
