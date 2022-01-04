@@ -663,3 +663,34 @@ finish
 
 ## function
 
+内联函数(inline): 直接将核心汇编代码复制到调用的地方，不用跳转；用空间换时间；
+> inline函数需要编译器支持，复杂的递归逻辑，编译器会放弃调用
+
+```cpp
+#include <iostream>
+using namespace std;
+
+inline int MaxValue(int x, int y){
+    return (x>y)?x:y;
+}
+
+inline int Fabonacci(int x){
+    if (x==0 || x==1){
+        return 1;
+    }else{
+        return Fabonacci(x-1)+Fabonacci(x-2);
+    }
+}
+
+int main()
+{
+    int a;
+    a=MaxValue(3,4); //反汇编查看调用过程，发现实现inline
+    cout<<a<<endl;
+
+    int result;
+    result=Fabonacci(5);//反汇编查看调用过程，发现没有实现inline
+    cout<<result<<endl;
+}
+```
+
