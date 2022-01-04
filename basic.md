@@ -17,6 +17,7 @@
   - [struct,union](#structunion)
   - [loop](#loop)
   - [function](#function)
+  - [recursion](#recursion)
 
 ## Encoding
 
@@ -674,11 +675,13 @@ inline int MaxValue(int x, int y){
     return (x>y)?x:y;
 }
 
-inline int Fabonacci(int x){
-    if (x==0 || x==1){
+int Fibonacci(int x){
+    if (x==0){
+        return 0;
+    }else if(x==1){
         return 1;
     }else{
-        return Fabonacci(x-1)+Fabonacci(x-2);
+        return Fibonacci(x-1)+Fibonacci(x-2);
     }
 }
 
@@ -689,8 +692,86 @@ int main()
     cout<<a<<endl;
 
     int result;
-    result=Fabonacci(5);//反汇编查看调用过程，发现没有实现inline
+    result=Fibonacci(5);//反汇编查看调用过程，发现没有实现inline
     cout<<result<<endl;
 }
 ```
 
+## recursion
+
+递归的三种优化方式
+1. 尾递归：所有递归形式的调用都出现在函数的尾部
+2. 使用循环代替递归
+3. 使用动态规划，空间换时间
+
+```cpp
+#include <iostream>
+using namespace std;
+
+//普通递归
+int Fibonacci(int x){
+    if (x==0){
+        return 0;
+    }else if(x==1){
+        return 1;
+    }else{
+        return Fibonacci(x-1)+Fibonacci(x-2);
+    }
+}
+
+//尾递归
+int Fib_Tail(int n, int ret0, int ret1){
+    if(n==0){
+        return ret0;
+    }else if(n==1){
+        return ret1;
+    }else{
+        return Fib_Tail(n-1, ret1, ret0+ret1);
+    }
+}
+
+//循环代替递归
+int Fib_Loop(int n){
+    if (n<2){
+        return n;
+    }
+    int n0=0,n1=1;
+    int tmp;
+    for(int i=2;i<=n;i++){
+        tmp=n0;
+        n0=n1;
+        n1=tmp+n1;
+    }
+    return n1;
+}
+
+//动态规划代替递归
+int g_a[100]; //记录Fibnacci前100个值, 全局变量，默认数组元素都为0
+
+int Fib_DP(int n){
+    g_a[0]=0;
+    g_a[1]=1;
+    for (int i=2;i<=n;i++){
+        if(g_a[i]==0){
+            g_a[i]=g_a[i-1]+g_a[i-2];
+        }
+    }
+    return g_a[n];
+}
+
+int main()
+{
+    int result;
+    result=Fibonacci(5);
+    cout<<result<<endl;
+
+    result=Fib_Loop(5);
+    cout<<result<<endl;
+
+    result=Fib_Tail(5, 0, 1);
+    cout<<result<<endl;
+
+    result=Fib_DP(5);
+    cout<<result<<endl;
+}
+```
