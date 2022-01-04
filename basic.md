@@ -5,6 +5,11 @@
   - [string](#string)
   - [const](#const)
   - [pointer](#pointer)
+  - [smart pointers](#smart-pointers)
+    - [auto_ptr](#auto_ptr)
+    - [unique_ptr](#unique_ptr)
+    - [shared_ptr](#shared_ptr)
+    - [weak_ptr](#weak_ptr)
 
 ## Encoding
 
@@ -170,5 +175,244 @@ int main()
     cout<<e<<endl; // 23
     cout<<f<<endl; // 34
     cout<<arr[0]<<' '<<arr[1]<<' '<<arr[2]; // 11 23 33
+}
+```
+
+## smart pointers
+
+智能指针分析
+1. 应用场景
+   - 对象所有权
+   - 生命周期
+2. 性能分析
+
+smart pointers
+- unique_ptr: 用的少
+- shared_ptr: 常用
+- weak_ptr: 常用
+- auto_ptr: deprecated
+
+### auto_ptr
+
+- 由new获得对象，auto_ptr对象销毁时，它所管理的对象自动被delete
+- 所有权转移: 不小心将它转移给另外的智能指针，原来的指针就不再拥有该对象；在拷贝/赋值过程中，会直接剥夺指针对原对象对内存的控制权，转交给新对象，然后将原对象指针置为nullptr. e.g. A程序员的auto_ptr指向X对象；B程序员的auto_ptr也指向X对象，B程序员的auto_ptr会剥夺X的控制权，A程序员的auto_ptr指向nullptr
+
+```cpp
+#include <iostream>
+#include <string>
+#include <memory>
+using namespace std;
+int main()
+{
+    {// 确定auto_ptr失效的范围, 结束之后轮流自动调用delete
+        // 对int使用
+        auto_ptr<int> pI(new int(10));
+        cout << *pI << endl;                // 10
+
+        // auto_ptr	C++ 17中移除	拥有严格对象所有权语义的智能指针
+        // auto_ptr原理：在拷贝 / 赋值过程中，直接剥夺原对象对内存的控制权，转交给新对象，
+        // 然后再将原对象指针置为nullptr（早期：NULL）。这种做法也叫管理权转移。
+        // 他的缺点不言而喻，当我们再次去访问原对象时，程序就会报错，所以auto_ptr可以说实现的不好，
+        // 很多企业在其库内也是要求不准使用auto_ptr。
+        auto_ptr<string> languages[5] = {
+            auto_ptr<string>(new string("C")),
+            auto_ptr<string>(new string("Java")),
+            auto_ptr<string>(new string("C++")),
+            auto_ptr<string>(new string("Python")),
+            auto_ptr<string>(new string("Rust"))
+        };
+        cout << "There are some computer languages here first time: \n";
+        for (int i = 0; i < 5; ++i)
+        {
+            cout << *languages[i] << endl;
+        }
+        auto_ptr<string> pC;
+        pC = languages[2]; // languges[2] loses ownership. 将所有权从languges[2]转让给pC，
+        //此时languges[2]不再引用该字符串从而变成空指针
+        cout << "There are some computer languages here second time: \n";
+        for (int i = 0; i < 2; ++i)
+        {
+                cout << *languages[i] << endl;
+        }
+        cout << "The winner is " << *pC << endl;
+        cout << "There are some computer languages here third time: \n";
+        for (int i = 0; i < 5; ++i)
+        {
+        	cout << *languages[i] << endl;
+        }
+    }
+    return 0;
+}
+```
+
+### unique_ptr
+
+- unique_ptr是专属所有权，只能被一个对象持有，不支持复制/赋值
+- 移动语义: unique_ptr禁止拷贝语义，但有时需要转移所有权，于是提供了移动语义，即可以使用`std::move()`进行控制权的转移，原来的指针指向nullptr
+
+
+```cpp
+#include <memory>
+#include <iostream>
+using namespace std;
+int main()
+{
+    // 在这个范围之外，unique_ptr被释放,指向的对象被销毁delete
+    {
+        auto i = unique_ptr<int>(new int(20));
+        cout << *i << endl;
+    }
+
+    // unique_ptr
+    // auto类型推断
+    auto w = std::make_unique<int>(10);
+    cout << *(w.get()) << endl;                             // 10
+    //auto w2 = w; // 编译错误如果想要把 w 复制给 w2, 是不可以的。
+    //  因为复制从语义上来说，两个对象将共享同一块内存。
+
+    // unique_ptr 只支持移动语义, 即如下
+    auto w2 = std::move(w); // w2 获得内存所有权，w 此时等于 nullptr
+    cout << ((w.get() != nullptr) ? (*w.get()) : -1) << endl;       // -1
+    cout << ((w2.get() != nullptr) ? (*w2.get()) : -1) << endl;   // 10
+    return 0;
+}
+```
+
+### shared_ptr
+
+通过一个引用计数共享一个对象，当引用计数为0的时候，该对象没有被使用，可以进行析构
+> 副作用：循环引用，导致堆里的内存无法正常回收，造成内存泄漏
+
+```cpp
+#include <iostream>
+#include <memory>
+using namespace std;
+int main()
+{
+    // shared_ptr
+    {
+        //shared_ptr 代表的是共享所有权，即多个 shared_ptr 可以共享同一块内存。
+        auto wA = shared_ptr<int>(new int(20));
+        {
+            auto wA2 = wA;
+            cout << ((wA2.get() != nullptr) ? (*wA2.get()) : -1) << endl;       // 20
+            cout << ((wA.get() != nullptr) ? (*wA.get()) : -1) << endl;           // 20
+            cout << wA2.use_count() << endl;                                              // 2
+            cout << wA.use_count() << endl;                                                // 2
+        }
+        //cout << wA2.use_count() << endl;
+        cout << wA.use_count() << endl;                                                    // 1
+        cout << ((wA.get() != nullptr) ? (*wA.get()) : -1) << endl;               // 20
+        //shared_ptr 内部是利用引用计数来实现内存的自动管理，每当复制一个 shared_ptr，
+        //	引用计数会 + 1。当一个 shared_ptr 离开作用域时，引用计数会 - 1。
+        //	当引用计数为 0 的时候，则 delete 内存。
+    }
+
+    return 0;
+}
+```
+
+```cpp
+#include <iostream>
+#include <memory>
+using namespace std;
+int main()
+{
+    // share_ptr同时支持move 语法
+    // make_shared在栈上面产生对象,因为没有new; 系统默认会自动回收栈的内存空间
+    auto wAA = std::make_shared<int>(30);
+    auto wAA2 = std::move(wAA); // 此时 wAA 等于 nullptr，wAA2.use_count() 等于 1
+    cout << ((wAA.get() != nullptr) ? (*wAA.get()) : -1) << endl;          // -1
+    cout << ((wAA2.get() != nullptr) ? (*wAA2.get()) : -1) << endl;      // 30
+    cout << wAA.use_count() << endl;                                                  // 0
+    cout << wAA2.use_count() << endl;                                                // 1
+    //将 wAA 对象 move 给 wAA2，意味着 wAA 放弃了对内存的所有权和管理，此时 wAA对象等于 nullptr。
+    //而 wAA2 获得了对象所有权，但因为此时 wAA 已不再持有对象，因此 wAA2 的引用计数为 1。
+
+    return 0;
+}
+```
+
+### weak_ptr
+
+weak_ptr设计成与shared_ptr共同工作，用一种观察者模式工作
+- 协助shared_ptr工作，可获得资源的观测权
+- 观察权意味着weak_ptr只对shared_ptr进行引用，而不改变其引用计数
+- 当被观察的shared_ptr失效后，相应的weak_ptr也相应失效
+
+```cpp
+#include <string>
+#include <iostream>
+#include <memory>
+using namespace std;
+
+struct B;
+struct A {
+    shared_ptr<B> pb;
+    ~A()
+    {
+        cout << "~A()" << endl;
+    }
+};
+struct B {
+    shared_ptr<A> pa;
+    ~B()
+    {
+        cout << "~B()" << endl;
+    }
+};
+
+// pa 和 pb 存在着循环引用，根据 shared_ptr 引用计数的原理，pa 和 pb 都无法被正常的释放。
+// weak_ptr 是为了解决 shared_ptr 双向引用的问题。
+struct BW;
+struct AW
+{
+    shared_ptr<BW> pb;
+    ~AW()
+    {
+        cout << "~AW()" << endl;
+    }
+};
+struct BW
+{
+    weak_ptr<AW> pa;
+    ~BW()
+    {
+        cout << "~BW()" << endl;
+    }
+};
+
+void Test()
+{
+    cout << "Test shared_ptr and shared_ptr:  " << endl;
+    shared_ptr<A> tA(new A());
+    shared_ptr<B> tB(new B());
+    cout << tA.use_count() << endl;//1
+    cout << tB.use_count() << endl;//1
+    tA->pb = tB;
+    tB->pa = tA;
+    cout << tA.use_count() << endl;// 2
+    cout << tB.use_count() << endl;// 2
+}
+void Test2()
+{
+    cout << "Test weak_ptr and shared_ptr:  " << endl;
+    shared_ptr<AW> tA(new AW());
+    shared_ptr<BW> tB(new BW());
+    cout << tA.use_count() << endl;// 1
+    cout << tB.use_count() << endl;// 1
+    tA->pb = tB;
+    tB->pa = tA;
+    cout << tA.use_count() << endl;// 1
+    cout << tB.use_count() << endl;// 2
+}
+
+int main()
+{
+    Test(); // 循环引用导致析构~A(),~B()没有调用，产生内存泄漏
+    Test2();// ~AW(),~BW()被调用，不产生内存泄漏
+
+
+    return 0;
 }
 ```
