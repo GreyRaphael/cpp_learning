@@ -541,6 +541,53 @@ int main()
 }
 ```
 
+```cpp
+// & vs 指针
+#include <iostream>
+using namespace std;
+
+int add1(const int* a, const int* b){
+    // // const不允许*a发生改变; 但是a指向的地址可以发生改变
+    // *a=10;
+    // *b=20;
+    int c=200;
+    a=&c;
+    return *a+*b;
+}
+
+int add2(const int& a, const int& b){
+    // // const不允许修改a,b; &表示不创建副本
+    // a=10;
+    // b=20;
+
+    // // 也不能指向其他的副本；
+    //int c=200;
+    //a=c;
+    return a+b;
+}
+
+int add3(int* const a, int* const b){
+    // // const不允许修改a指向的地址；但是可以修改*a
+    //int c=1000;
+    //a=&c;
+    *a=100;
+    *b=200;
+    return *a+*b;
+}
+
+//int add4(int& const a, int& const b){} // const无法修饰&
+
+int main()
+{
+    int a=1,b=2;
+    cout<<add1(&a,&b)<<endl; // 202
+
+    cout<<add2(a,b)<<endl;// 30
+
+    cout<<add3(&a,&b)<<endl;// 300
+}
+```
+
 ## sentence
 
 ## if, switch
