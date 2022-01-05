@@ -5,6 +5,7 @@
   - [file operation](#file-operation)
   - [header file](#header-file)
   - [deep copy vs copy](#deep-copy-vs-copy)
+  - [NULL, nullptr, void*](#null-nullptr-void)
 
 ## oop introduction
 
@@ -119,3 +120,54 @@ method2: `#pragma once`，使用编译器来防止同一个文件被include多�
 1. 引用计数
 2. C++新标准的移动语义(move)
 
+## NULL, nullptr, void*
+
+in C: `#define NULL ((void*)0)`
+
+in C++
+
+```cpp
+#ifndef NULL
+    #ifdef __cplusplus
+        #define NULL 0
+    #else
+        #define NULL ((void*)0)
+    #endif
+#endif
+```
+
+in C++11
+- nullptr: (void*)0
+- NULL: 0
+
+example
+
+```cpp
+#include <iostream>
+using namespace std;
+
+void func(void* i)
+{
+	cout << "func(void* i)" << endl;
+}
+void func(int i)
+{
+	cout << "func(int i)" << endl;
+}
+
+int main()
+{
+	int* pi = NULL;
+	int* pi2 = nullptr;
+	char* pc = NULL;
+	char* pc2 = nullptr;
+	func(NULL);                   // func(int i)
+	func(nullptr);                 // func(void* i)
+	func(pi);                         // func(void* i)
+	func(pi2);                       // func(void* i)
+	func(pc);                        // func(void* i)
+	func(pc2);                      // func(void* i)
+
+    return 0;
+}
+```
