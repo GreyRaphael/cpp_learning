@@ -8,6 +8,7 @@
   - [NULL, nullptr, void*](#null-nullptr-void)
   - [change type](#change-type)
   - [Adapter](#adapter)
+  - [Generics](#generics)
 
 ## oop introduction
 
@@ -375,5 +376,139 @@ int main()
 	pR2->Draw("Testing2 Adapter");
 
     return 0;
+}
+```
+
+## Generics
+
+C++的精髓：泛型思想(generics)
+- 如果说OOP是一种通过间接层来调用函数，以换取一种抽象；泛型编程则是更加直接的抽象，不会因为间接层而损失效率
+- 不同于OOP的动态期多态，泛型编程是一种静态期多态，通过编译器生成最直接的代码
+- 泛型编程能够将算法和特定类型、结构剥离，尽可能复用代码
+
+example: without generics
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int max(int a, int b){
+    return a>b?a:b;
+}
+
+double max(double a, double b){
+    return a>b?a:b;
+}
+
+int main()
+{
+    int x1=1, y1=2;
+    double x2=3.4, y2=5.6;
+    cout<<max(x1, y1)<<endl; // 2
+    cout<<max(x2, y2)<<endl; // 5.6
+
+}
+```
+
+example: with template
+
+```cpp
+#include <iostream>
+using namespace std;
+
+template <class T>
+T max(T a, T b){
+    return a>b?a:b;
+}
+
+int main()
+{
+    int x1=1, y1=2;
+    double x2=3.4, y2=5.6;
+    cout<<max(x1, y1)<<endl; // 2
+    cout<<max(x2, y2)<<endl; // 5.6
+    cout<<max('x', 'a')<<endl; // x
+    cout<<max("hello", "world")<<endl; // hello, 与实际不符
+}
+```
+
+example: template特化
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+template <class T>
+T max(T a, T b){
+    return a>b?a:b;
+}
+
+// 针对"hello", "world"这种const char *进行特化
+template <>
+const char* max(const char* a, const char* b){
+    return strcmp(a, b)>0 ? a:b;
+}
+
+int main()
+{
+    int x1=1, y1=2;
+    double x2=3.4, y2=5.6;
+    cout<<max(x1, y1)<<endl; // 2
+    cout<<max(x2, y2)<<endl; // 5.6
+    cout<<max('x', 'a')<<endl; // x
+
+    cout<<max("hello", "world")<<endl; //world,  "hello"是consta char*
+
+    char* s1="hello";
+    char* s2="world";
+    cout<<max(s1, s2)<<endl; // world
+}
+```
+
+example: template with 2 class
+
+```cpp
+#include <iostream>
+using namespace std;
+
+
+template <class T2, class T3>
+int max(T2 a, T3 b){
+    return static_cast<int>(a>b?a:b);
+}
+
+int main()
+{
+    cout<<max(10, 22.5)<<endl; // 22
+}
+```
+
+example: 利用编译器来计算
+
+```cpp
+#include <iostream>
+using namespace std;
+
+template <int n>
+struct Sum{
+    enum Value{
+        N=Sum<n-1>::N+n,
+    };
+};
+
+// 设置起点
+template <>
+struct Sum<1>{
+    enum Value{
+        N=1,
+    };
+};
+
+
+int main()
+{
+    // template利用编译器计算(递归思想): 1+2+3+4...+100
+    cout<<Sum<100>::N<<endl; //5050
 }
 ```
