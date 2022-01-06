@@ -6,6 +6,7 @@
   - [functor](#functor)
   - [algorithm](#algorithm)
   - [iterator](#iterator)
+  - [Adpter](#adpter)
 
 ## Introduction
 
@@ -238,4 +239,10 @@ Container & Iterator
 - stack: 不支持迭代器
 - queue: 不支持迭代器
 - priority_queue: 不支持迭代器
+
+## Adpter
+
+- stack: FILO, 底层数据结构是deque
+- queue: FIFO, 底层数据结构是deque
+- priority_queue: 特殊队列，能够在队列中进行堆排序，底层结构为vector or deque
 
