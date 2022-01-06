@@ -4,6 +4,8 @@
   - [Introduction](#introduction)
   - [Container](#container)
   - [functor](#functor)
+  - [algorithm](#algorithm)
+  - [iterator](#iterator)
 
 ## Introduction
 
@@ -208,4 +210,32 @@ int main()
 
 仿函数：主要是为了搭配stl算法使用，本质是class重载了一个`operator()`, 创建了一个行为类似函数的对象 
 > 函数指针不能满足STL对抽象性的要求，不能满足软件积木的要求，无法与STL其他组件搭配
+
+## algorithm
+
+STL算法分成4类：包含于<algorithm>, <numeric>, <functional>
+1. 非可变序列算法
+2. 可变系列算法
+3. 排序算法
+4. 数值算法
+
+## iterator
+
+迭代器是一种smart pointer, 用于访问**顺序容器**和**关联容器**中的元素，相当于容器和操作容器算法间的中介
+
+迭代器分类
+1. 正向迭代器: iterator
+2. 常量正向迭代器: const_iterator, 不希望修改访问的内容
+3. 反向迭代器: reverse_iterator
+4. 常量反向迭代器: const_reverse_iterator
+
+Container & Iterator
+- vector: 随机访问
+- deque: 随机访问
+- list: 双向访问
+- set/multiset: 双向访问
+- map/multimap: 双向访问
+- stack: 不支持迭代器
+- queue: 不支持迭代器
+- priority_queue: 不支持迭代器
 
