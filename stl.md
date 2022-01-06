@@ -7,6 +7,7 @@
   - [algorithm](#algorithm)
   - [iterator](#iterator)
   - [Adpter](#adpter)
+  - [Allocator](#allocator)
 
 ## Introduction
 
@@ -245,4 +246,9 @@ Container & Iterator
 - stack: FILO, 底层数据结构是deque
 - queue: FIFO, 底层数据结构是deque
 - priority_queue: 特殊队列，能够在队列中进行堆排序，底层结构为vector or deque
+
+## Allocator
+
+空间配置器: 不仅是在内存上分配，还可以在硬盘上分配空间
+> 《STL源码剖析》侯捷
 
