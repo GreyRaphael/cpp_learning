@@ -3,6 +3,7 @@
 - [C++ STL](#c-stl)
   - [Introduction](#introduction)
   - [Container](#container)
+  - [functor](#functor)
 
 ## Introduction
 
@@ -128,7 +129,7 @@ using namespace std;
 
 struct Display
 {
-    void operator()(pair<string, double> info)
+    void operator()(pair<string, double> info) // override (), 仿函数
     {
         cout << info.first << ": " << info.second << endl;
     }
@@ -202,3 +203,9 @@ int main()
     return 0;
 }
 ```
+
+## functor
+
+仿函数：主要是为了搭配stl算法使用，本质是class重载了一个`operator()`, 创建了一个行为类似函数的对象 
+> 函数指针不能满足STL对抽象性的要求，不能满足软件积木的要求，无法与STL其他组件搭配
+
