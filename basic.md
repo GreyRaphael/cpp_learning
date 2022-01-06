@@ -18,6 +18,7 @@
   - [loop](#loop)
   - [function](#function)
   - [recursion](#recursion)
+  - [Thread](#thread)
 
 ## Encoding
 
@@ -820,5 +821,143 @@ int main()
 
     result=Fib_DP(5);
     cout<<result<<endl;
+}
+```
+
+## Thread
+
+```cpp
+#include <thread>
+#include <iostream>
+using namespace std;
+
+void func1(){
+    cout<<"This is func1"<<endl;
+}
+
+void func2(const char * str){
+    cout<<"This is func2: "<<str<<endl;
+}
+
+
+int main()
+{
+    thread t1(func1);
+    thread t2(func2, "Grey");
+    t1.join();
+    t2.join();
+    cout<<"This is main"<<endl;
+
+    return 0;
+}
+```
+
+```cpp
+#include <thread>
+#include <mutex>
+#include <iostream>
+using namespace std;
+
+mutex g_mutex;
+void T1()
+{
+	g_mutex.lock();
+	cout << "T1 Hello" << endl;
+	g_mutex.unlock();
+}
+void T2(const char* str)
+{
+	g_mutex.lock();
+	cout << "T2 " << str << endl;
+	g_mutex.unlock();
+}
+int main()
+{
+	thread t1(T1);
+	thread t2(T2, "Hello World");
+	t1.join();
+	t2.join();
+	t2.detach();
+	cout << "Main Hi" << endl;
+
+
+    return 0;
+}
+```
+
+tips: thread传递引用的时候，不能传递(`&a`), 要用`ref(a)`
+
+```cpp
+#include <iostream>
+#include <thread>
+#include <mutex>
+using namespace std;
+
+
+// 存钱
+void Deposit(mutex& m, int& money)
+{
+	// 锁的粒度尽可能的最小化
+	for(int index = 0; index < 100; index++)
+	{
+		m.lock();
+		money += 1;
+		m.unlock();
+	}
+}
+// 取钱
+void Withdraw(mutex& m, int& money)
+{
+	// 锁的粒度尽可能的最小化
+	for (int index = 0; index < 100; index++)
+	{
+		m.lock();
+		money -= 2;
+		m.unlock();
+	}
+}
+
+int main()
+{
+	// 银行存取款
+	//int money = 2000;
+	//mutex m;
+	//cout << "Current money is: " << money << endl;
+	//thread t1(Deposit, ref(m), ref(money));
+	//thread t2(Withdraw, ref(m), ref(money));
+	//t1.join();
+	//t2.join();
+	//cout << "Finally money is: " << money << endl;
+
+	//线程交换 
+	//thread tW1([]()
+	//{
+	//	cout << "ThreadSwap1 " << endl;
+	//});
+	//thread tW2([]()
+	//{
+	//	cout << "ThreadSwap2 " << endl;
+	//});
+	//cout << "ThreadSwap1' id is " << tW1.get_id() << endl;
+	//cout << "ThreadSwap2' id is " << tW2.get_id() << endl;
+
+	//cout << "Swap after:" << endl;
+	//swap(tW1, tW2); 
+	//cout << "ThreadSwap1' id is " << tW1.get_id() << endl;
+	//cout << "ThreadSwap2' id is " << tW2.get_id() << endl;
+	//tW1.join();
+	//tW2.join();
+
+	//// 线程移动
+	thread tM1( []() { ; } );
+	//tM1.join();
+	cout << "ThreadMove1' id is " << tM1.get_id() << endl;
+	cout << "Move after:" << endl;
+	thread tM2 = move(tM1);
+	cout << "ThreadMove2' id is " << tM2.get_id() << endl;
+	cout << "ThreadMove1' id is " << tM1.get_id() << endl;
+	tM2.join();
+
+	return 0;
 }
 ```
