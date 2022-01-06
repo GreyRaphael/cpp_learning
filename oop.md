@@ -6,6 +6,7 @@
   - [header file](#header-file)
   - [deep copy vs copy](#deep-copy-vs-copy)
   - [NULL, nullptr, void*](#null-nullptr-void)
+  - [change type](#change-type)
 
 ## oop introduction
 
@@ -169,5 +170,119 @@ int main()
 	func(pc2);                      // func(void* i)
 
     return 0;
+}
+```
+
+## change type
+
+`const_cast`: 用于转换指针或引用，去掉类型的const
+
+```cpp
+int main()
+{
+	// C++ const_cast
+	const int a = 10;
+	//int* pA = &a; //error
+	int* pA = const_cast<int*>(&a);
+	*pA = 100;
+}
+```
+
+`reinterpret_cast`: 很危险;重新解释类型，既不检查指向的内容，也不检查指针类型本身；但要求转换前后的类型所占的用内存的大小一致，否则引发编译器错误。
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int Test(){
+    return 10;
+}
+
+int main()
+{
+    //C++ reinterpret_cast
+    typedef int(*FuncPtr)() ;
+    FuncPtr p1=&Test;
+    cout<<p1()<<endl; // 10
+
+    typedef void(*FPtr)() ;
+    FPtr p2;
+    p2=reinterpret_cast<FPtr>(&Test);
+    p2();// p2没有输出了
+}
+```
+
+`static_cast`: 用于基本类型转换；有继承关系类对象和类指针之间转换；由程序员来确保转换是安全的；不会产生动态转换的类型安全检查的开销；
+
+```cpp
+int main()
+{
+    //C++ static_cast
+    int a=5;
+    double b=static_cast<int>(a);
+    cout<<a<<' '<<b<<endl;
+
+    double x=6.6;
+    int y=static_cast<int>(x);
+    cout<<x<<' '<<y<<endl; // 6.6 6
+}
+```
+
+`dynamic_cast`: 只能用于含有虚函数的类，必须用在多态体系中，用于类层次间的向上和向下转化；向下转化时(父类转换为子类)，如果是非法的，对于指针返回NULL;
+> 类对象的转换建议使用`dynamic_cast`, 不使用`static_cast`
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Base{
+public:
+    Base():_i(0){;}
+    // 父类虚函数
+    virtual void T(){cout<<"Base:T "<<_i<<endl;}
+private:
+    int _i;
+};
+
+class Derive:public Base{
+public:
+    Derive():_j(1){;}
+    // 子类虚函数
+    virtual void T(){cout<<"Derive:T "<<_j<<endl;}
+
+private:
+    int _j;
+};
+
+int main()
+{
+    //C++ static_cast
+    Base b1;
+    Derive d1;
+    Base* pb;
+    Derive* pd;
+
+    // 子类→父类
+    pb=static_cast<Base*>(&d1);//编译器不检查
+    if(pb==NULL){
+        cout<<"unsafe static_cast from child to father"<<endl;
+    }
+
+    pb=dynamic_cast<Base*>(&d1);//因为有虚函数，就会检查
+    if(pb==NULL){
+        cout<<"unsafe dynamic_cast from child to father"<<endl;
+    }
+
+    // 父类→子类
+    pd=static_cast<Derive*>(&b1);//不检查，后果自负
+    if (pd==NULL){
+        cout<<"unsafe static_cast from father to child"<<endl;
+    }
+
+    pd=dynamic_cast<Derive*>(&b1);
+    if (pd==NULL){
+        cout<<"unsafe dynamic_cast from father to child"<<endl;
+    }
+
 }
 ```
